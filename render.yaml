@@ -1,0 +1,23 @@
+# Render blueprint for the API. The database is MongoDB Atlas (set MONGODB_URI). Run a single instance.
+services:
+  - type: web
+    name: teaching-portal-api
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT --workers 1 --proxy-headers
+    healthCheckPath: /api/health
+    envVars:
+      - key: MONGODB_URI
+        sync: false
+      - key: MONGODB_DB
+        value: teaching_portal
+      - key: SECRET_KEY
+        generateValue: true
+      - key: CORS_ORIGINS
+        sync: false
+      - key: ENVIRONMENT
+        value: production
+      # Never list the demo accounts on a real deployment (production ignores it anyway).
+      - key: DEMO_AUTH_ENABLED
+        value: "false"

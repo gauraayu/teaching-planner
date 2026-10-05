@@ -1,0 +1,216 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------
+   Design tokens - the ONLY place colours are defined.
+
+   Black + charcoal surfaces, white/grey type, one emerald accent.
+   Roughly 70% black, 15% elevated surface, 10% type, 5% green.
+   Green means: primary action, active/selected, focus, progress, success.
+   Amber = needs attention, red = error/destructive, blue = information.
+
+   Tailwind's default palette is switched off (`--color-*: initial`), so a
+   component cannot reach for `slate-500` or `green-400`: every class
+   (bg-surface, text-fg-secondary, border-line, text-primary...) resolves
+   to a token below. Admin, Professor, CL/CH and OM all share them.
+   ------------------------------------------------------------------ */
+@theme {
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, "SFMono-Regular", "Cascadia Mono", Menlo, monospace;
+
+  --color-*: initial;
+  --color-black: #000000;
+
+  /* Backgrounds */
+  --color-bg: #020805;          /* application background, top bar */
+  --color-deep: #000000;        /* sidebar */
+  --color-surface: #07110b;     /* panels, tables, inputs */
+  --color-surface-2: #0a160f;   /* table header, secondary surface */
+  --color-surface-3: #0d1c13;   /* elevated: menus, hover, chips */
+  --color-track: #142219;       /* progress track, skeleton */
+
+  /* Lines */
+  --color-line: #173522;        /* default border */
+  --color-line-subtle: #102719; /* row dividers */
+  --color-line-strong: #24402d; /* input / secondary button border */
+  --color-line-hover: #2d603c;
+
+  /* Accent */
+  --color-primary: #22e866;
+  --color-primary-hover: #35f279;
+  --color-primary-muted: #159447;
+  --color-primary-soft: rgb(34 232 102 / 0.1);
+  --color-primary-border: rgb(34 232 102 / 0.25);
+  --color-on-primary: #021006;  /* text on a green fill */
+
+  /* Type */
+  --color-fg: #f4f7f5;
+  --color-fg-soft: #dde5df;
+  --color-fg-secondary: #a1ada5;
+  --color-fg-label: #89968e;    /* metric labels, table headers, meta text */
+  --color-fg-muted: #68756d;    /* placeholders, icons */
+  --color-fg-faint: #45524a;    /* disabled, separators */
+
+  /* Status */
+  --color-success: #22e866;
+  --color-warning: #f4b942;
+  --color-warning-soft: rgb(244 185 66 / 0.1);
+  --color-warning-border: rgb(244 185 66 / 0.28);
+  --color-danger: #f05252;
+  --color-danger-soft: rgb(240 82 82 / 0.1);
+  --color-danger-border: rgb(240 82 82 / 0.3);
+  --color-info: #4aa8ff;
+  --color-info-soft: rgb(74 168 255 / 0.1);
+  --color-info-border: rgb(74 168 255 / 0.28);
+  --color-accent: #a78bfa;      /* purple: a missing academic asset (notes / assignment link) */
+  --color-accent-soft: rgb(167 139 250 / 0.1);
+  --color-accent-border: rgb(167 139 250 / 0.3);
+
+  --text-2xs: 0.6875rem;
+  --text-2xs--line-height: 1rem;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+
+  --shadow-pop: 0 0 0 1px rgb(0 0 0 / 0.4), 0 16px 40px -8px rgb(0 0 0 / 0.75);
+  --shadow-card: 0 1px 0 rgb(0 0 0 / 0.3);
+}
+
+@layer base {
+  html {
+    font-size: 14px;
+    color-scheme: dark; /* native date/time pickers, selects and scrollbars follow the theme */
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: "cv11", "ss01";
+    scrollbar-color: #23442e var(--color-surface);
+  }
+  body {
+    @apply bg-bg text-fg-soft font-sans;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+  ::selection {
+    background: rgb(34 232 102 / 0.28);
+    color: var(--color-fg);
+  }
+  /* Tabular figures wherever numbers are compared in columns. */
+  .tnum {
+    font-variant-numeric: tabular-nums;
+  }
+  input[type="checkbox"],
+  input[type="radio"] {
+    accent-color: var(--color-primary);
+  }
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-surface);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #23442e;
+    border-radius: 6px;
+    border: 2px solid var(--color-surface);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #2d603c;
+  }
+}
+
+@layer components {
+  .panel {
+    /* min-w-0: a panel inside a grid/flex track must never grow wider than its track
+       just because it holds truncated (nowrap) text - otherwise phones scroll sideways. */
+    @apply min-w-0 rounded-md border border-line bg-surface;
+  }
+  .panel-header {
+    @apply flex items-center justify-between gap-3 border-b border-line px-4 py-3;
+  }
+  .panel-title {
+    @apply text-[13px] font-semibold text-fg;
+  }
+  .label {
+    @apply mb-1 block text-[13px] font-medium text-fg-soft;
+  }
+  .field {
+    @apply block h-9 w-full rounded-md border border-line-strong bg-surface px-3 text-sm text-fg placeholder:text-fg-muted
+      transition-colors hover:border-line-hover focus:border-primary focus:outline-none focus:ring-[3px] focus:ring-primary/15
+      disabled:cursor-not-allowed disabled:bg-surface-2 disabled:text-fg-muted;
+  }
+  .field-error {
+    @apply border-danger hover:border-danger focus:border-danger focus:ring-danger/15;
+  }
+  .kbd {
+    @apply rounded border border-line-strong bg-surface-2 px-1.5 py-0.5 font-mono text-[11px] text-fg-secondary;
+  }
+  .meta {
+    @apply text-[12.5px] text-fg-label;
+  }
+  /* Table header cells: one definition for every hand-built table. */
+  .th {
+    @apply text-[11.5px] font-semibold tracking-wide text-fg-label uppercase;
+  }
+  .link {
+    @apply text-primary underline-offset-2 hover:text-primary-hover hover:underline;
+  }
+  .scroll-thin {
+    scrollbar-width: thin;
+    scrollbar-color: #23442e transparent;
+  }
+  /* Small "class is running" dot. The only motion on operational screens. */
+  .live-dot {
+    @apply relative inline-block h-2 w-2 shrink-0 rounded-full bg-primary;
+  }
+  .live-dot::after {
+    content: "";
+    @apply absolute inset-0 rounded-full bg-primary;
+    animation: live-ping 2s ease-out infinite;
+  }
+  /* Atmosphere for the sign-in screen only: faint grid + one soft emerald glow. */
+  .login-atmosphere {
+    background-image:
+      radial-gradient(60rem 32rem at 50% -8rem, rgb(34 232 102 / 0.13), transparent 62%),
+      linear-gradient(to right, rgb(34 232 102 / 0.045) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(34 232 102 / 0.045) 1px, transparent 1px);
+    background-size: auto, 44px 44px, 44px 44px;
+    mask-image: radial-gradient(ellipse 85% 75% at 50% 18%, #000 35%, transparent 100%);
+  }
+}
+
+@keyframes live-ping {
+  0% { transform: scale(1); opacity: 0.55; }
+  70%, 100% { transform: scale(2.6); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Sprint sheet column presets: a cell lists the presets it belongs to in data-p; "id" columns are always shown. */
+table.sheet[data-preset="academic"] [data-p]:not([data-p~="academic"]):not([data-p~="id"]),
+table.sheet[data-preset="schedule"] [data-p]:not([data-p~="schedule"]):not([data-p~="id"]),
+table.sheet[data-preset="execution"] [data-p]:not([data-p~="execution"]):not([data-p~="id"]),
+table.sheet[data-preset="verification"] [data-p]:not([data-p~="verification"]):not([data-p~="id"]),
+table.sheet[data-preset="operations"] [data-p]:not([data-p~="operations"]):not([data-p~="id"]) {
+  display: none;
+}
+
+/* Subject accents for the timetable: used only as a left edge, a dot or a code badge - never as a filled cell.
+   Plain custom properties (not theme tokens) because they are picked at runtime from the subject code. */
+:root {
+  --color-sub-1: #4aa8ff;
+  --color-sub-2: #22d3a6;
+  --color-sub-3: #f4b942;
+  --color-sub-4: #f472b6;
+  --color-sub-5: #a78bfa;
+  --color-sub-6: #38d4e8;
+  --color-sub-7: #fb923c;
+  --color-sub-8: #a3e635;
+}
